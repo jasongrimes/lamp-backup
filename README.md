@@ -15,7 +15,47 @@ Backups are compressed with tar/gzip and stored in a directory named after the d
 Old backups are automatically rotated.
 A copy of the backed up files can optionally be stored on Amazon S3.
 
-## Install the tools
+## Usage
+
+    Usage: lamp-backup.sh [options]
+
+    lamp-backup.sh is a simple tool for backing up files and MySQL databases.
+
+    Options:
+      -o OUTPUT_DIR, --output-dir=OUTPUT_DIR
+                             Base directory in which to store backups.
+                             (Default: '/var/backup')
+      -d DIRS, --dirs=DIRS   Directories to back up.
+                             (Default: '/var/www /etc/apache2 /etc/php5 /var/log')
+      -e PATTERNS, --exclude=PATTERNS
+                             Exclude files matching these patterns.
+                             (Default: 'core *~')
+      -c FILE, --mysql-conf=FILE
+                             A MySQL config file with connection information.
+                             (Default: '/home/ubuntu/lamp-backup/etc/mysql-connection.cfg')
+      -s FILE, -s3-conf=FILE An s3cmd config file with connection info for Amazon S3.
+                             (Default: '/root/.s3cfg')
+      -p S3_PATH, --s3-path=S3_PATH
+                             The Amazon S3 path to copy files to (ex. s3://my-bucket/my-folder/).
+      --do-files             Back up and compress files. (Enabled by default.)
+      --no-files             Don't back up and compress files.
+      --do-mysql             Back up MySQL databases. (Enabled by default.)
+      --no-mysql             Don't back up MySQL databases.
+      --do-s3                Copy backups to Amazon S3. Enabled by default if S3 is configured.
+      --no-s3                Don't copy backups to Amazon S3.
+      --do-rotate            Rotate old backups. (Enabled by default.)
+      --no-rotate            Don't rotate old backups.
+      -q, --quiet            Quiet
+      -v, --verbose          Verbose
+      --help                 Print this help screen
+
+Typically, you'll want to run the lamp-backup script as root so it has access to all the files.
+Do so with sudo:
+
+    sudo lamp-backup.sh
+
+
+## Installing lamp-backup
 
 The following commands will copy the lamp-backup `sbin` and `etc` directories into `/usr/local`.
 It's safe to upgrade an existing installation this way too,
@@ -31,7 +71,10 @@ since your existing config files won't get overwritten.
     rm master.zip;
     cd -
 
-## Configure the MySQL connection
+## Configuring the MySQL connection
+
+You can supply MySQL login information on the command line,
+but to run the backup script automatically via cron you'll need to store connection information securely in a config file.
 
 Create the `mysql-connection.cnf` file from the template,
 and add the connection information for the MySQL user that will perform the backup.
@@ -50,7 +93,9 @@ Example mysql-connection.cnf file:
     user = root
     password = MySuPeRsEcReTrOoTpAsSwOrD
 
-## Customize backup configuration
+## Customizing backup configuration
+
+All command-line options can be specified in a configuration file.
 
 The lamp-backup configuration file is optional.
 The defaults are intended to be suitable for basic LAMP servers.
@@ -62,9 +107,8 @@ To customize the configuration, create the `lamp-backup.conf` file from the temp
 
 See the comments in the config file for details about the options available.
 
-Most options can be overridden on the command line as well.
 
-## Configure Amazon S3
+## Configuring Amazon S3
 
 It's possible to configure lamp-backup to store a copy of the backups on [Amazon S3](http://aws.amazon.com/s3/).
 
@@ -88,16 +132,7 @@ Edit the following value in `/usr/local/etc/lamp-backup.conf`:
 
 Make sure the path ends with a slash (/).
 
-## Running the backup script
-
-Run the backup script as root, using sudo:
-
-    sudo /usr/local/sbin/lamp-backup.sh
-
-Configuration can be overridden using various command-line options.
-Run `lamp-backup.sh --help` to see a complete list.
-
-## Set up a cron job to run nightly backups
+## Setting up a cron job to run nightly backups
 
 Run backups nightly by setting up a cron job like the following.
 
