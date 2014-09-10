@@ -62,14 +62,11 @@ It's safe to upgrade an existing installation this way too,
 since your existing config files won't get overwritten.
 
     INSTALL_DIR=/usr/local;
-    cd /tmp;
-    wget https://github.com/jasongrimes/lamp-backup/archive/master.zip;
-    unzip master.zip;
-    sudo cp -r lamp-backup-master/sbin $INSTALL_DIR/;
-    sudo cp -r lamp-backup-master/etc $INSTALL_DIR/;
-    rm -rf lamp-backup-master;
-    rm master.zip;
-    cd -
+    wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
+        && unzip master.zip \
+        && sudo cp -r lamp-backup-master/sbin $INSTALL_DIR/ \
+        && sudo cp -r lamp-backup-master/etc $INSTALL_DIR/ \
+        && rm -rf lamp-backup-master master.zip
 
 ## Configuring the MySQL connection
 
