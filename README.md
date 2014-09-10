@@ -18,6 +18,8 @@ A copy of the backed up files can optionally be stored on Amazon S3.
 ## Install the tools
 
 The following commands will copy the lamp-backup `sbin` and `etc` directories into `/usr/local`.
+It's safe to upgrade an existing installation this way too,
+since your existing config files won't get overwritten.
 
     INSTALL_DIR=/usr/local;
     cd /tmp;
@@ -56,7 +58,7 @@ To customize the configuration, create the `lamp-backup.conf` file from the temp
 
     cd /usr/local/etc
     sudo cp lamp-backup.conf.dist lamp-backup.conf
-    vim lamp-backup.conf
+    sudo vim lamp-backup.conf
 
 See the comments in the config file for details about the options available.
 
@@ -86,7 +88,7 @@ Edit the following value in `/usr/local/etc/lamp-backup.conf`:
 
 Make sure the path ends with a slash (/).
 
-## Run the backup script
+## Running the backup script
 
 Run the backup script as root, using sudo:
 
