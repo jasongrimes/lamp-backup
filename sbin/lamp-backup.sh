@@ -208,13 +208,16 @@ if [ "$DO_S3" -gt 0 ]; then
     fi
     if [ ! -x "$S3CMD" ]; then
         echo "Error: s3cmd not found at '$S3CMD'. Skipping copy to S3." >&2;
+        ERROR=1
     elif [ ! -r "$S3_CONF" ]; then
         echo "Error: S3 config file '$S3_CONF' not found. Skipping copy to S3." >&2;
+        ERROR=1
     elif [ -z "$S3_PATH" ]; then
         echo "Error: S3 path not defined." >&2;
         echo "Specify with the -p parameter, or set the S3_PATH option in the config file." >&2
         echo "Run '$THIS_SCRIPT --help' for details." >&2
         echo "Skipping copy to S3." >&2
+        ERROR=1
     else
         if [ "$VERBOSE" -ge 1 ]; then echo "Copying $fullpath to $S3_PATH..."; fi
         cmd="$S3CMD -c $S3_CONF put --recursive $fullpath $S3_PATH"
