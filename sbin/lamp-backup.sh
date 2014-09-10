@@ -252,7 +252,7 @@ if [ "$DO_ROTATE" ]; then
 fi
 
 # Summary
-if [ "$VERBOSE" -ge 1 ]; then
+if [ "$VERBOSE" -ge 0 ]; then
     echo "---------------"
     echo "Backup complete"
     echo "---------------"
