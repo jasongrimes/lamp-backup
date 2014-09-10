@@ -112,6 +112,7 @@ EXCLUDE_PATTERNS=${EXCLUDE_PATTERNS:-$DEFAULT_EXCLUDE_PATTERNS}
 DO_FILES=${DO_FILES:-1}
 DO_MYSQL=${DO_MYSQL:-1}
 DO_ROTATE=${DO_ROTATE:-1}
+S3_CONF=${S3_CONF:-/root/.s3cfg}
 if [ -z "$DO_S3" ]; then
     if [ -n "$S3_PATH" ]; then
         DO_S3=1;
