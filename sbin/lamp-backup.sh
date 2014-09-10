@@ -36,6 +36,7 @@ usage() {
     echo "                         A MySQL config file with connection information."
     echo "                         (Default: '$CONFIG_DIR/mysql-connection.cfg')"
     echo "  -s FILE, -s3-conf=FILE An s3cmd config file with connection info for Amazon S3."
+    echo "                         (Default: '/root/.s3cfg')"
     echo "  -p S3_PATH, --s3-path=S3_PATH"
     echo "                         The Amazon S3 path to copy files to (ex. s3://my-bucket/my-folder/)."
     echo "  --do-files             Back up and compress files. (Enabled by default.)"
