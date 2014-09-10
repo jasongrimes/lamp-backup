@@ -1,0 +1,53 @@
+#
+# Config file template for lamp-backup.sh.
+# Rename to lamp-backup.conf and edit as needed.
+#
+# See https://github.com/jasongrimes/lamp-backup for details.
+#
+
+# Override the default command paths
+#TAR=/bin/tar
+#MYSQL_BACKUP=/usr/local/sbin/mysql-backup.sh
+#S3CMD=/usr/bin/s3cmd
+
+# Verbosity level. 0-2
+VERBOSE=1
+
+# The base directory in which to store the backups.
+OUTPUT_BASE_DIR=/var/backup
+
+# Whether to back up and compress files. 1 means yes, 0 means no.
+DO_FILES=1
+
+# The directories to back up.
+DIRS="/var/www /etc/apache2 /etc/php5 /var/log"
+
+# Files matching these patterns will be excluded.
+EXCLUDE_PATTERNS="core *~"
+
+# Whether to back up MySQL. 1 means yes, 0 means no.
+DO_MYSQL=1
+
+# Path to MySQL configuration file with connection information.
+# Passed to mysql as the --defaults-extra-file.
+# By default, uses the value configured for mysql-backup.sh,
+# which defaults to mysql-connection.cnf in this directory.
+# If it exists, this file should only be readable by root.
+#MYSQL_CONF=/usr/local/etc/mysql-connection.cnf
+
+# Whether to copy backups to Amazon S3.
+# Enabled by default if S3_PATH is set.
+# Note: On ubuntu, this requires the s3cmd and python-magic packages.
+#DO_S3=1
+
+# Path to the s3cmd config file, with connection info for Amazon S3.
+# If it exists, this file should only be readable by root.
+#S3_CONF=/root/.s3cfg
+
+# The Amazon S3 path to copy files to.
+# Must end with a slash.
+# If this value is set, DO_S3 is enabled by default.
+#S3_PATH=s3://my-bucket/my-folder/
+
+# Whether to rotate backups on successful completion. 1 means yes, 0 means no.
+DO_ROTATE=1

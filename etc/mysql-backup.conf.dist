@@ -1,0 +1,27 @@
+#
+# Config file template for the MySQL backup script, mysql-backup.sh.
+# Rename to mysql-backup.conf and edit as needed.
+#
+# This file is optional, and is only useful if you're going to be overriding the default values.
+#
+# See https://github.com/jasongrimes/lamp-backup for details.
+#
+
+# Paths to MySQL binaries.
+MYSQL=/usr/bin/mysql
+MYSQLADMIN=/usr/bin/mysqladmin
+MYSQLDUMP=/usr/bin/mysqldump
+
+# How verbose to be. From 0 (quiet) to 2 (very verbose).
+VERBOSE=1
+
+# A list of databases not to dump.
+SKIP_DBS="information_schema performance_schema"
+
+# The directory into which to save the mysqldump output files.
+OUTPUT_DIR="."
+
+# The path to a MySQL "defaults-extra-file", with login information for the MySQL instance.
+# Defaults to mysql-connection.cnf, in the same directory as this config file.
+# If it exists, this file should be readable only by the user who will run the backup script (presumably root).
+MYSQL_CONF=""

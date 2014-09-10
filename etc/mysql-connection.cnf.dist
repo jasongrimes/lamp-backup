@@ -1,0 +1,13 @@
+#
+# Stores optional mysql login information for use by mysql-backup.sh.
+# Rename to mysql-connection.cnf and edit as needed.
+#
+# For security reasons, this file should only be readable by the user that will run the backup script (presumably root).
+#
+# See https://github.com/jasongrimes/lamp-backup for details.
+#
+
+[client]
+host = localhost
+user =
+password =
