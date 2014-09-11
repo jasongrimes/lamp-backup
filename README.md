@@ -29,7 +29,7 @@ The following commands will do this and set some important file permissions.
         && unzip -q master.zip \
         && cd lamp-backup-master \
         && sudo cp -r sbin $INSTALL_DIR/ \
-        && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then sudo cp $file $INSTALL_DIR/etc; fi; done \
+        && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then sudo cp etc/$file $INSTALL_DIR/etc; fi; done \
         && sudo chown root:root $INSTALL_DIR/etc/mysql-connection.cnf \
         && sudo chmod 0600 $INSTALL_DIR/etc/mysql-connection.cnf \
         && cd - \
