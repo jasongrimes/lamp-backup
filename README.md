@@ -57,6 +57,14 @@ For more details about customizing your backups, see the information below.
 
 ## Usage
 
+Typically, you'll want to run the lamp-backup script as root so it has access to all the files.
+Do it with sudo:
+
+    sudo lamp-backup.sh
+
+You can customize the script's behavior with a variety of command-line options.
+(In most cases it's easier to edit the config file instead, though.)
+
     Usage: lamp-backup.sh [options]
 
     lamp-backup.sh is a simple tool for backing up files and MySQL databases.
@@ -89,10 +97,6 @@ For more details about customizing your backups, see the information below.
       -v, --verbose          Verbose
       --help                 Print this help screen
 
-Typically, you'll want to run the lamp-backup script as root so it has access to all the files.
-Do so with sudo:
-
-    sudo lamp-backup.sh
 
 ## Configuration
 
