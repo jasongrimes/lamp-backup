@@ -105,6 +105,7 @@ done
 #
 TAR=${TAR:-/bin/tar}
 MYSQL_BACKUP=${MYSQL_BACKUP:-$THIS_DIR/mysql-backup.sh}
+ROTATE_CMD=${ROTATE_CMD:-/usr/local/sbin/lamp-backup-rotate.sh}
 S3CMD=${S3CMD:-/usr/bin/s3cmd}
 VERBOSE=${VERBOSE:-1}
 OUTPUT_BASE_DIR=${OUTPUT_BASE_DIR:-$DEFAULT_OUTPUT_BASE_DIR}
