@@ -357,7 +357,7 @@ fi
 # Remove S3 directories
 if [ "${#s3_dirs_to_remove[@]}" -gt 0 ]; then
     for dir in $s3_dirs_to_remove; do
-        cmd="$S3CMD -c $S3_CONF rm --recursive $dir"
+        cmd="$S3CMD -c $S3_CONF del --recursive $dir"
         if [ "$DRY_RUN" = "1" ]; then
             echo "Would remove: $dir"
         else
