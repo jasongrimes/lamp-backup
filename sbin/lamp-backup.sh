@@ -252,10 +252,12 @@ if [ "$DO_ROTATE" ]; then
         rotate_args="--force"
         if [ "$DO_S3" -gt 0 ]; then rotate_args="$rotate_args --do-s3"
         else rotate_args="$rotate_args --no-s3"
+        fi
         if [ "$DO_FILES" -gt 0 ]; then rotate_args="$rotate_args --do-local"
         else rotate_args="$rotate_args --no-local"
-        if [ -n "$S3_CONF" ]; then rotate_args="$rotate_args --s3-conf=$S3_CONF";
-        if [ -n "$S3_PATH" ]; then rotate_args="$rotate_args --s3-path=$S3_PATH";
+        fi
+        if [ -n "$S3_CONF" ]; then rotate_args="$rotate_args --s3-conf=$S3_CONF"; fi
+        if [ -n "$S3_PATH" ]; then rotate_args="$rotate_args --s3-path=$S3_PATH"; fi
 
         VERBOSE=$VERBOSE $ROTATE_CMD $rotate_args
     fi
