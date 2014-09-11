@@ -105,7 +105,6 @@ You can customize the script's behavior with a variety of command-line options.
 To customize the backup configuration, edit `/usr/local/etc/lamp-backup.conf`.
 This file is optional, and if it doesn't exist, sensible defaults will be used.
 
-All command-line options can be specified in a configuration file.
 See the comments in the config file for details about the options available.
 
 ### Configuring the MySQL connection
