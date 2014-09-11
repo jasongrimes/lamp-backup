@@ -13,7 +13,7 @@ ERROR=0
 
 THIS_SCRIPT=`basename $0`
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR=${CONFIG_DIR:-$(readlink -f $THIS_DIR/../etc))
+CONFIG_DIR=${CONFIG_DIR:-$(readlink -f $THIS_DIR/../etc)}
 DEFAULT_OUTPUT_BASE_DIR=/var/backup
 DEFAULT_DIRS="/var/www /etc/apache2 /etc/php5 /var/log"
 DEFAULT_EXCLUDE_PATTERNS="core *~"
@@ -55,11 +55,12 @@ usage() {
     echo ""
 }
 
+# Send the output of the given command to /dev/null unless VERBOSE >= 2
 redirect_output() {
-    if [ "$VERBOSE" -eq 0 ]; then
-        "$@" > /dev/null
-    else
+    if [ "$VERBOSE" -ge 2 ]; then
         "$@"
+    else
+        "$@" > /dev/null
     fi
 }
 
@@ -105,7 +106,7 @@ done
 #
 TAR=${TAR:-/bin/tar}
 MYSQL_BACKUP=${MYSQL_BACKUP:-$THIS_DIR/mysql-backup.sh}
-ROTATE_CMD=${ROTATE_CMD:-/usr/local/sbin/lamp-backup-rotate.sh}
+ROTATE_CMD=${ROTATE_CMD:-$THIS_DIR/lamp-backup-rotate.sh}
 S3CMD=${S3CMD:-/usr/bin/s3cmd}
 VERBOSE=${VERBOSE:-1}
 OUTPUT_BASE_DIR=${OUTPUT_BASE_DIR:-$DEFAULT_OUTPUT_BASE_DIR}
@@ -147,15 +148,20 @@ if [ "$DO_MYSQL" -gt 0 ]; then
     fi
 
     dumpdir=$fullpath/mysqldump
-    if [ "$VERBOSE" -ge 2 ]; then echo "Creating $dumpdir..."; fi
+    if [ "$VERBOSE" -ge 2 ]; then echo "Creating $dumpdir"; fi
     mkdir -p $dumpdir
 
     mysql_args="-o $dumpdir"
     if [ -n "$MYSQL_CONF" ]; then mysql_args="$mysql_args -c $MYSQL_CONF"; fi
-    VERBOSE=$VERBOSE CONFIG_DIR=$CONFIG_DIR $MYSQL_BACKUP $mysql_args
+    if [ "$VERBOSE" -eq 0 ]; then mysql_args="$mysql_args -q";
+    elif [ "$VERBOSE" -eq 2 ]; then mysql_args="$mysql_args -vv"; fi
+
+    cmd="$MYSQL_BACKUP $mysql_args"
+    if [ "$VERBOSE" -ge 2 ]; then echo "  Executing command: $cmd"; fi
+    CONFIG_DIR=$CONFIG_DIR $cmd
 
     if [ $? -eq 0 ]; then
-        if [ "$VERBOSE" -ge 1 ]; then echo "Compressing $dumpdir..."; fi
+        if [ "$VERBOSE" -ge 1 ]; then echo "Compressing $dumpdir"; fi
         $TAR czf $dumpdir.tgz -C $fullpath mysqldump && rm -rf $dumpdir
         chmod 0600 $dumpdir.tgz
     else
@@ -226,7 +232,7 @@ if [ "$DO_S3" -gt 0 ]; then
         echo "Skipping copy to S3." >&2
         ERROR=1
     else
-        if [ "$VERBOSE" -ge 1 ]; then echo "Copying $fullpath to $S3_PATH..."; fi
+        if [ "$VERBOSE" -ge 1 ]; then echo "Copying $fullpath to $S3_PATH"; fi
         cmd="$S3CMD -c $S3_CONF put --recursive $fullpath $S3_PATH"
         if [ "$VERBOSE" -ge 2 ]; then echo "  Executing command: $cmd"; fi
         redirect_output $cmd
@@ -244,7 +250,7 @@ if [ "$DO_S3" -gt 0 ]; then
 fi
 
 # Rotate old backups
-if [ "$DO_ROTATE" ]; then
+if [ "$DO_ROTATE" -eq 1 ]; then
     if [ "$ERROR" -ge 1 ]; then
         echo "Skipping backup rotation because an error occurred." >&2
     else
@@ -264,7 +270,13 @@ if [ "$DO_ROTATE" ]; then
         if [ -n "$S3_CONF" ]; then rotate_args="$rotate_args --s3-conf=$S3_CONF"; fi
         if [ -n "$S3_PATH" ]; then rotate_args="$rotate_args --s3-path=$S3_PATH"; fi
 
-        VERBOSE=$VERBOSE CONFIG_DIR=$CONFIG_DIR $ROTATE_CMD $rotate_args
+        if [ "$VERBOSE" -eq 0 ]; then rotate_args="$rotate_args -q";
+        elif [ "$VERBOSE" -eq 2 ]; then rotate_args="$rotate_args -v";
+        fi
+
+        cmd="$ROTATE_CMD $rotate_args"
+        if [ "$VERBOSE" -ge 2 ]; then echo "  Executing command: $cmd"; fi
+        CONFIG_DIR=$CONFIG_DIR $cmd
     fi
 fi
 

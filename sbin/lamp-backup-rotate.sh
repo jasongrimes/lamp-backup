@@ -55,11 +55,12 @@ function in_array() {
   for VALUE in ${ARRAY[@]}; do [ "$VALUE" == "$NEEDLE" ] && echo 1 && return; done
 }
 
+# Send the output of the given command to /dev/null unless VERBOSE >= 2
 redirect_output() {
-    if [ "$VERBOSE" -eq 0 ]; then
-        "$@" > /dev/null
-    else
+    if [ "$VERBOSE" -ge 2 ]; then
         "$@"
+    else
+        "$@" > /dev/null
     fi
 }
 
@@ -224,8 +225,8 @@ fi
 
 # Determine S3 backups to rotate
 if [ "$DO_ROTATE_S3" -gt 0 ]; then
-    # Get the list of backups.
-    backups=$($S3CMD -c $S3_CONF ls $S3_PATH | awk '{ print $2 }')
+    # Get the list of backups, in reverse chronological order.
+    backups=$($S3CMD -c $S3_CONF ls $S3_PATH | awk '{ print $2 }' | sort -r)
 
     # Determine what to keep and what to remove.
     s3_kept_dates=""
@@ -311,14 +312,16 @@ if [ "$NO_PROMPT" -ne "1" ]; then
         echo "---------------"
         echo "Please confirm"
         echo "---------------"
+        echo "LOCAL:"
         echo "The following local directories will be KEPT:"
         for dir in $dirs_to_keep; do echo $dir; done
         echo ""
-        echo "The following S3 directories will be KEPT:"
-        for dir in $s3_dirs_to_keep; do echo $dir; done
-        echo ""
         echo "The following local directories will be REMOVED:"
         for dir in $dirs_to_remove; do echo $dir; done
+        echo ""
+        echo "AMAZON S3:"
+        echo "The following S3 directories will be KEPT:"
+        for dir in $s3_dirs_to_keep; do echo $dir; done
         echo ""
         echo "The following S3 directories will be REMOVED:"
         for dir in $s3_dirs_to_remove; do echo $dir; done
@@ -350,7 +353,7 @@ if [ "${#dirs_to_remove[@]}" -gt 0 ]; then
             if [ "$VERBOSE" -ge 1 ]; then echo "Removing $dir"; fi
             $cmd
         fi
-        if [ "$VERBOSE" -ge 2 ]; then echo "  $cmd"; fi
+        if [ "$VERBOSE" -ge 2 ]; then echo "  Executing command: $cmd"; fi
     done
 fi
 
@@ -360,10 +363,11 @@ if [ "${#s3_dirs_to_remove[@]}" -gt 0 ]; then
         cmd="$S3CMD -c $S3_CONF del --recursive $dir"
         if [ "$DRY_RUN" = "1" ]; then
             echo "Would remove: $dir"
+            if [ "$VERBOSE" -ge 2 ]; then echo "  Would execute command: $cmd"; fi
         else
             if [ "$VERBOSE" -ge 1 ]; then echo "Removing $dir"; fi
-            $cmd
+            if [ "$VERBOSE" -ge 2 ]; then echo "  Executing command: $cmd"; fi
+            redirect_output $cmd
         fi
-        if [ "$VERBOSE" -ge 2 ]; then echo "  $cmd"; fi
     done
 fi
