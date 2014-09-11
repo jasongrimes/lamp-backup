@@ -21,7 +21,8 @@ The most recent two weeks of nightly backups will be kept by default,
 along with 1 year of monthly backups (the backup taken on the first day of the month).
 
 (1) Install the **lamp-backup** tools by downloading the project files and copying the sbin and etc directories to `/usr/local`.
-The following commands will do this (and will avoid overwriting any existing config files in case you're upgrading):
+The following commands will do this and set some important file permissions.
+(It also avoids overwriting any existing config files, in case you're upgrading.)
 
     INSTALL_DIR=/usr/local;
     wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
@@ -35,11 +36,12 @@ The following commands will do this (and will avoid overwriting any existing con
         && rm -rf lamp-backup-master master.zip
 
 (2) Edit `/usr/local/etc/mysql-connection.cfg` and set the password for your MySQL root user.
+Make sure this file is readable only by root.
 
-(3) To enable up offsite backups to [Amazon S3](http://aws.amazon.com/s3), run the following and enter your AWS access key and secret:
+(3) To enable offsite backups to [Amazon S3](http://aws.amazon.com/s3), run the following and enter your AWS access key and secret:
 
-    apt-get install s3cmd python-magic
-    s3cmd --configure -c /root/.s3cfg
+    sudo apt-get install s3cmd python-magic
+    sudo s3cmd --configure -c /root/.s3cfg
 
 Then edit `/usr/local/etc/lamp-backup.conf` and set the `S3_PATH` to the S3 URL where you want your backups to be saved.
 
@@ -91,17 +93,27 @@ Do so with sudo:
     sudo lamp-backup.sh
 
 
+## Customizing backup configuration
+
+All command-line options can be specified in a configuration file.
+
+The lamp-backup configuration file is optional.
+The defaults are intended to be suitable for basic LAMP servers.
+
+To customize the configuration, edit `/usr/local/etc/lamp-backup.conf`.
+
+See the comments in the config file for details about the options available.
+
+
 ## Configuring the MySQL connection
 
 You can supply MySQL login information on the command line,
 but to run the backup script automatically via cron you'll need to store connection information securely in a config file.
 
-Create the `mysql-connection.cnf` file from the template,
-and add the connection information for the MySQL user that will perform the backup.
+Add the connection information for the MySQL user that will perform the backup in `/usr/local/etc/mysq-connection.cnf`.
 Make sure this file is readable only by root to prevent exposing your secret login information.
 
     cd /usr/local/etc
-    sudo cp mysql-connection.cnf.dist mysql-connection.cnf
     sudo chown root:root mysql-connection.cnf
     sudo chmod 0600 mysql-connection.cnf
     sudo vim mysql-connection.cnf
@@ -112,21 +124,6 @@ Example mysql-connection.cnf file:
     host = localhost
     user = root
     password = MySuPeRsEcReTrOoTpAsSwOrD
-
-
-## Customizing backup configuration
-
-All command-line options can be specified in a configuration file.
-
-The lamp-backup configuration file is optional.
-The defaults are intended to be suitable for basic LAMP servers.
-To customize the configuration, create the `lamp-backup.conf` file from the template and edit as needed.
-
-    cd /usr/local/etc
-    sudo cp lamp-backup.conf.dist lamp-backup.conf
-    sudo vim lamp-backup.conf
-
-See the comments in the config file for details about the options available.
 
 
 ## Configuring Amazon S3
