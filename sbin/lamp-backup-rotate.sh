@@ -9,7 +9,7 @@
 
 THIS_SCRIPT=`basename $0`
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR=$(readlink -f $THIS_DIR/../etc)
+CONFIG_DIR=${CONFIG_DIR:-$(readlink -f $THIS_DIR/../etc)}
 
 usage() {
     echo "Usage: $THIS_SCRIPT [options]"

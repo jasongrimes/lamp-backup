@@ -10,7 +10,8 @@
 
 THIS_SCRIPT=`basename $0`
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_MYSQL_CONF=$(readlink -f $THIS_DIR/../etc/mysql-connection.cnf)
+CONFIG_DIR=${CONFIG_DIR:-$(readlink -f $THIS_DIR/../etc/)}
+DEFAULT_MYSQL_CONF=$CONFIG_DIR/mysql-connection.cnf
 DEFAULT_SKIP_DBS="information_schema performance_schema"
 
 usage() {

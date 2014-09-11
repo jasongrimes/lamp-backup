@@ -13,7 +13,7 @@ ERROR=0
 
 THIS_SCRIPT=`basename $0`
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR=$(readlink -f $THIS_DIR/../etc)
+CONFIG_DIR=${CONFIG_DIR:-$(readlink -f $THIS_DIR/../etc))
 DEFAULT_OUTPUT_BASE_DIR=/var/backup
 DEFAULT_DIRS="/var/www /etc/apache2 /etc/php5 /var/log"
 DEFAULT_EXCLUDE_PATTERNS="core *~"
@@ -129,6 +129,7 @@ outdir=backup_$date
 fullpath=$OUTPUT_BASE_DIR/$outdir
 if [ "$VERBOSE" -ge 1 ]; then echo "Creating $fullpath"; fi
 mkdir -p $fullpath
+chmod 700 $fullpath
 if [ ! -w $fullpath ]; then
     echo "Error creating output directory '$fullpath'" >&2
     echo "Aborting." >&2
@@ -151,11 +152,12 @@ if [ "$DO_MYSQL" -gt 0 ]; then
 
     mysql_args="-o $dumpdir"
     if [ -n "$MYSQL_CONF" ]; then mysql_args="$mysql_args -c $MYSQL_CONF"; fi
-    VERBOSE=$VERBOSE $MYSQL_BACKUP $mysql_args
+    VERBOSE=$VERBOSE CONFIG_DIR=$CONFIG_DIR $MYSQL_BACKUP $mysql_args
 
     if [ $? -eq 0 ]; then
         if [ "$VERBOSE" -ge 1 ]; then echo "Compressing $dumpdir..."; fi
         $TAR czf $dumpdir.tgz -C $fullpath mysqldump && rm -rf $dumpdir
+        chmod 0600 $dumpdir.tgz
     else
         ERROR=1
     fi
@@ -191,6 +193,8 @@ if [ "$DO_FILES" -gt 0 ]; then
         if [ "$?" -ge 1 ]; then
             ERROR=1
         fi
+
+        chmod 0600 $tarfile
     done
 
     if [ "$VERBOSE" -ge 1 ]; then
@@ -260,7 +264,7 @@ if [ "$DO_ROTATE" ]; then
         if [ -n "$S3_CONF" ]; then rotate_args="$rotate_args --s3-conf=$S3_CONF"; fi
         if [ -n "$S3_PATH" ]; then rotate_args="$rotate_args --s3-path=$S3_PATH"; fi
 
-        VERBOSE=$VERBOSE $ROTATE_CMD $rotate_args
+        VERBOSE=$VERBOSE CONFIG_DIR=$CONFIG_DIR $ROTATE_CMD $rotate_args
     fi
 fi
 
