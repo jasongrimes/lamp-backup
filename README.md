@@ -71,7 +71,7 @@ For more details about customizing your backups, see the information below.
                              (Default: 'core *~')
       -c FILE, --mysql-conf=FILE
                              A MySQL config file with connection information.
-                             (Default: '/home/ubuntu/lamp-backup/etc/mysql-connection.cfg')
+                             (Default: '/usr/local/etc/mysql-connection.cfg')
       -s FILE, -s3-conf=FILE An s3cmd config file with connection info for Amazon S3.
                              (Default: '/root/.s3cfg')
       -p S3_PATH, --s3-path=S3_PATH
