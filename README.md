@@ -32,6 +32,7 @@ The following commands will do this and set some important file permissions.
         && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then sudo cp etc/$file $INSTALL_DIR/etc; fi; done \
         && sudo chown root:root $INSTALL_DIR/etc/mysql-connection.cnf \
         && sudo chmod 0600 $INSTALL_DIR/etc/mysql-connection.cnf \
+        && sudo chmod a+x $INSTALL_DIR/sbin/lamp-backup*.sh $INSTALL_DIR/sbin/mysql-backup.sh \
         && cd - \
         && rm -rf lamp-backup-master master.zip
 
