@@ -50,7 +50,7 @@ Then edit `/usr/local/etc/lamp-backup.conf` and set the `S3_PATH` to the S3 URL 
 
     # Run backups nightly
     MAILTO=you@example.com
-    5 * * * * root /usr/local/sbin/lamp-backup.sh
+    5 0 * * * root /usr/local/sbin/lamp-backup.sh
 
 For more details about customizing your backups, see the information below.
 
@@ -158,10 +158,10 @@ Run backups nightly by setting up a cron job like the following.
 
     sudo vim /etc/cron.d/lamp-backup
 
-Sample cron file to run backups nightly at 10 minutes after midnight,
+Sample cron file to run backups nightly at 5 minutes after midnight,
 and send an email report to you@example.com:
 
     # Run backups nightly
     MAILTO=you@example.com
-    5 * * * * root /usr/local/sbin/lamp-backup.sh
+    5 0 * * * root /usr/local/sbin/lamp-backup.sh
 
