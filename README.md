@@ -24,7 +24,7 @@ along with twelve months of monthly backups (the backup taken on the first day o
 The following commands will do this and set some important file permissions.
 (It also avoids overwriting any existing config files, in case you're upgrading.)
 
-    INSTALL_DIR=/usr/local; \
+    INSTALL_DIR=/usr/local;
     wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
         && unzip -q master.zip \
         && cd lamp-backup-master \
