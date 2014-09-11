@@ -238,7 +238,7 @@ Run `lamp-backup-rotate.sh --help` for a complete list of arguments.
 ## Restoring from backups
 
 Backups are stored as tar/gzip archives, with one for each backed up directory, and one for the MySQL dumps.
-File permissions are set so that backups are only readable by the user who ran the backup script (presumably root).
+File permissions are set so that backups are only readable by the user who ran the backup script (typically root).
 
 To see the contents of an archive:
 
