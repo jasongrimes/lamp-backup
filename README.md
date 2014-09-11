@@ -93,20 +93,17 @@ Do so with sudo:
 
     sudo lamp-backup.sh
 
+## Configuration
 
-## Customizing backup configuration
+### Customizing backup configuration
+
+To customize the backup configuration, edit `/usr/local/etc/lamp-backup.conf`.
+This file is optional, and if it doesn't exist, sensible defaults will be used.
 
 All command-line options can be specified in a configuration file.
-
-The lamp-backup configuration file is optional.
-The defaults are intended to be suitable for basic LAMP servers.
-
-To customize the configuration, edit `/usr/local/etc/lamp-backup.conf`.
-
 See the comments in the config file for details about the options available.
 
-
-## Configuring the MySQL connection
+### Configuring the MySQL connection
 
 You can supply MySQL login information on the command line,
 but to run the backup script automatically via cron you'll need to store connection information securely in a config file.
@@ -127,7 +124,7 @@ Example mysql-connection.cnf file:
     password = MySuPeRsEcReTrOoTpAsSwOrD
 
 
-## Configuring Amazon S3
+### Configuring Amazon S3
 
 It's possible to configure lamp-backup to store a copy of the backups on [Amazon S3](http://aws.amazon.com/s3/).
 
@@ -152,7 +149,7 @@ Edit the following value in `/usr/local/etc/lamp-backup.conf`:
 Make sure the path ends with a slash (/).
 
 
-## Setting up a cron job to run nightly backups
+### Setting up a cron job to run nightly backups
 
 Run backups nightly by setting up a cron job like the following.
 
@@ -168,9 +165,14 @@ and send an email report to you@example.com:
 ## Backup rotation
 
 **lamp-backup** automatically deletes old backups, to prevent filling up disk space.
+
+### Default rotation
+
 By default, the most recent two weeks of daily backups are kept.
+
 Twelve monthly backups (the backup taken on the first day of the month) are kept locally,
 and monthly backups are kept forever on Amazon S3.
+
 Only one backup is kept for each day (the most recent one).
 
 ### Configuring backup rotation
@@ -212,12 +214,12 @@ calculating the amount of disk space required by your rotation strategy is as si
 
 If the required disk space won't leave you with a comfortable amount of free space,
 adjust your configuration accordingly.
-Keep in mind that the size of your backups is likely to grow over time as well.
+Keep in mind that the size of your backups is likely to grow over time.
 
 A summary of disk usage is shown at the end of the report each time a backup is run.
-Keep an eye on this periodically to make sure that disk space won't become an issue.
+Check this periodically to make sure that disk space won't become an issue.
 
-### Rotating backups without running lamp-backup
+### Rotating backups independently
 
 While backup rotation is typically done automatically when `lamp-backup.sh` is run,
 you can also do a backup rotation independently by running
@@ -229,5 +231,36 @@ showing you a list of what would be deleted and what would be kept.
 You can disable this prompt with the `--force` argument.
 Run `lamp-backup-rotate.sh --help` for a complete list of arguments.
 
+## Restoring from backups
 
+Backups are stored as tar/gzip archives, with one for each backed up directory, and one for the MySQL dumps.
+File permissions are set so that backups are only readable by the user who ran the backup script (presumably root).
+
+To see the contents of an archive:
+
+    sudo tar tzvf $BACKUPDIR/etc_php5.tgz
+
+To extract the archive:
+
+    sudo tar xzvf $BACKUPDIR/etc_php5.tgz
+
+To extract a single file from an archive (ex. php.ini):
+
+    sudo tar xzvf $BACKUPDIR/etc_php5.tgz ./etc/php5/apache2/php.ini
+
+The MySQL databases are stored in SQL files created by mysqldump, with one file per database.
+All of these files are zipped up into a single `mysqldump.tgz` archive.
+
+To restore a database named "mydb":
+
+    sudo tar xzvf $BACKUPDIR/mysqldump.tgz
+    cd mysqldump
+    mysqladmin -uroot -p create mydb
+    mysql -uroot -p mydb < mydb.sql
+
+You could also restore the tables from the "mydb" database into a temporary database (ex. "mydbtemp"),
+for review or manipulation before overwriting any existing data.
+
+    mysqladmin -uroot -p create mydbtemp
+    mysql -uroot -p mydbtemp < mydb.sql
 
