@@ -24,17 +24,22 @@ along with twelve months of monthly backups (the backup taken on the first day o
 The following commands will do this and set some important file permissions.
 (It also avoids overwriting any existing config files, in case you're upgrading.)
 
-    INSTALL_DIR=/usr/local;
-    wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
+    INSTALL_DIR=/usr/local; \
+    echo 'Downloading lamp-backup from github...'; \
+    wget -q https://github.com/jasongrimes/lamp-backup/archive/master.zip \
         && unzip -q master.zip \
         && cd lamp-backup-master \
+        && sudo mkdir -p $INSTALL_DIR/etc \
+        && echo "Copying scripts to $INSTALL_DIR/sbin/" \
         && sudo cp -r sbin $INSTALL_DIR/ \
-        && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then sudo cp etc/$file $INSTALL_DIR/etc; fi; done \
+        && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then echo "Copying $file to $INSTALL_DIR/etc/"; sudo cp etc/$file $INSTALL_DIR/etc/; fi; done \
+        && echo "Setting permissions on $INSTALL_DIR/etc/mysql-connection.cnf" \
         && sudo chown root:root $INSTALL_DIR/etc/mysql-connection.cnf \
         && sudo chmod 0600 $INSTALL_DIR/etc/mysql-connection.cnf \
         && sudo chmod a+x $INSTALL_DIR/sbin/lamp-backup*.sh $INSTALL_DIR/sbin/mysql-backup.sh \
-        && cd - \
-        && rm -rf lamp-backup-master master.zip
+        && cd - >/dev/null \
+        && rm -rf lamp-backup-master master.zip \
+        && echo "Done. See https://github.com/jasongrimes/lamp-backup for details."
 
 (2) Edit `/usr/local/etc/mysql-connection.cfg` and set the password for your MySQL root user.
 Make sure this file is readable only by root.
