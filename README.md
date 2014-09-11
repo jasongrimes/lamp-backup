@@ -8,12 +8,48 @@ Bash shell scripts for basic backup management on a LAMP server.
 These tools are designed to backup a basic Linux/Apache/MySQL/PHP server with a relatively small amount of data.
 They're intended for cases in which fancy enterprise backup solutions are overkill.
 The goal is simplicity and ease of use, while providing an acceptable level of fault tolerance and security.
+Only full backups are performed (not incremental backups), to make it easier to restore data when needed.
 
-By default, `lamp-backup.sh` backs up important Apache, MySQL, and PHP files from their default locations,
-and dumps all MySQL databases with mysqldump.
-Backups are compressed with tar/gzip and stored in a directory named after the date under `/var/backup`.
-Old backups are automatically rotated.
-A copy of the backed up files can optionally be stored on Amazon S3.
+## Quick start
+
+This section shows how to set up **lamp-backup** with the default configuration.
+
+By default, your important Apache, PHP, and MySQL files and databases will be backed up nightly into `/var/backup`,
+with a second copy stored offsite at Amazon S3.
+Old backups will be automatically removed.
+The most recent two weeks of nightly backups will be kept by default,
+along with 1 year of monthly backups (the backup taken on the first day of the month).
+
+(1) Install the **lamp-backup** tools by downloading the project files and copying the sbin and etc directories to `/usr/local`.
+The following commands will do this (and will avoid overwriting any existing config files in case you're upgrading):
+
+    INSTALL_DIR=/usr/local;
+    wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
+        && unzip -q master.zip \
+        && cd lamp-backup-master \
+        && sudo cp -r sbin $INSTALL_DIR/ \
+        && for file in $(ls etc); do if [ ! -f "$INSTALL_DIR/etc/$file" ]; then sudo cp $file $INSTALL_DIR/etc; fi; done \
+        && sudo chown root:root $INSTALL_DIR/etc/mysql-connection.cnf \
+        && sudo chmod 0600 $INSTALL_DIR/etc/mysql-connection.cnf \
+        && cd - \
+        && rm -rf lamp-backup-master master.zip
+
+(2) Edit `/usr/local/etc/mysql-connection.cfg` and set the password for your MySQL root user.
+
+(3) To enable up offsite backups to [Amazon S3](http://aws.amazon.com/s3), run the following and enter your AWS access key and secret:
+
+    apt-get install s3cmd python-magic
+    s3cmd --configure -c /root/.s3cfg
+
+Then edit `/usr/local/etc/lamp-backup.conf` and set the `S3_PATH` to the S3 URL where you want your backups to be saved.
+
+(4) Set up a cron job for running nightly backups by creating a `/etc/cron.d/lamp-backup` file with the following contents:
+
+    # Run backups nightly
+    MAILTO=you@example.com
+    5 * * * * root /usr/local/sbin/lamp-backup.sh
+
+For more details about customizing your backups, see the information below.
 
 ## Usage
 
@@ -55,19 +91,6 @@ Do so with sudo:
     sudo lamp-backup.sh
 
 
-## Installing lamp-backup
-
-The following commands will copy the lamp-backup `sbin` and `etc` directories into `/usr/local`.
-It's safe to upgrade an existing installation this way too,
-since your existing config files won't get overwritten.
-
-    INSTALL_DIR=/usr/local;
-    wget https://github.com/jasongrimes/lamp-backup/archive/master.zip \
-        && unzip master.zip \
-        && sudo cp -r lamp-backup-master/sbin $INSTALL_DIR/ \
-        && sudo cp -r lamp-backup-master/etc $INSTALL_DIR/ \
-        && rm -rf lamp-backup-master master.zip
-
 ## Configuring the MySQL connection
 
 You can supply MySQL login information on the command line,
@@ -89,6 +112,7 @@ Example mysql-connection.cnf file:
     host = localhost
     user = root
     password = MySuPeRsEcReTrOoTpAsSwOrD
+
 
 ## Customizing backup configuration
 
@@ -128,6 +152,7 @@ Edit the following value in `/usr/local/etc/lamp-backup.conf`:
     S3_PATH=s3://my-bucket/my-folder/
 
 Make sure the path ends with a slash (/).
+
 
 ## Setting up a cron job to run nightly backups
 
