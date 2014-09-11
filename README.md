@@ -165,3 +165,69 @@ and send an email report to you@example.com:
     MAILTO=you@example.com
     5 0 * * * root /usr/local/sbin/lamp-backup.sh
 
+## Backup rotation
+
+**lamp-backup** automatically deletes old backups, to prevent filling up disk space.
+By default, the most recent two weeks of daily backups are kept.
+Twelve monthly backups (the backup taken on the first day of the month) are kept locally,
+and monthly backups are kept forever on Amazon S3.
+Only one backup is kept for each day (the most recent one).
+
+### Configuring backup rotation
+
+These defaults can be changed by editing `/usr/local/etc/lamp-backup.conf`.
+
+There are separate config options for locally stored backups and backups stored on Amazon S3.
+
+Set `KEEP_NUM_RECENT` to the number of recent backups to keep on the local system.
+Typically this will be the number of days of recent backups to keep,
+unless you set `KEEP_ONE_PER_DAY` to 0.
+Set `KEEP_NUM_RECENT=-1` to keep all (i.e. never delete old backups).
+
+Set `KEEP_NUM_MONTHLIES` to the number of monthly backups to keep on the local system.
+A monthly backup is just a backup taken on the first day of the month.
+This allows you to keep historical snapshots over a long period of time,
+without using a ton of disk space.
+Set `KEEP_NUM_MONTHLIES=-1` to keep all monthly backups.
+
+Backup rotation on Amazon S3 is configured the same way,
+but the option names start with `S3_`,
+ex. `S3_KEEP_NUM_RECENT` and `S3_KEEP_NUM_MONTHLIES`.
+
+### Disk space considerations
+
+Backup rotation should be configured in such a way that you have enough backups around to recover anything you might need,
+but that you never keep so many backups you risk running out of disk space.
+
+To estimate the amount of disk space that will be needed,
+first determine the size of a single backup.
+The following command shows the size of each backup in the `/var/backup` directory:
+
+    du -sh /var/backup/*
+
+If all future backups are the same size as your latest backup,
+calculating the amount of disk space required by your rotation strategy is as simple as this:
+
+    (BACKUP_SIZE * KEEP_NUM_RECENT) + (BACKUP_SIZE * KEEP_NUM_MONTHLY)
+
+If the required disk space won't leave you with a comfortable amount of free space,
+adjust your configuration accordingly.
+Keep in mind that the size of your backups is likely to grow over time as well.
+
+A summary of disk usage is shown at the end of the report each time a backup is run.
+Keep an eye on this periodically to make sure that disk space won't become an issue.
+
+### Rotating backups without running lamp-backup
+
+While backup rotation is typically done automatically when `lamp-backup.sh` is run,
+you can also do a backup rotation independently by running
+`/usr/local/sbin/lamp-backup-rotate.sh`.
+
+When run independently, `lamp-backup-rotate.sh`
+prompts you for confirmation before deleting anything,
+showing you a list of what would be deleted and what would be kept.
+You can disable this prompt with the `--force` argument.
+Run `lamp-backup-rotate.sh --help` for a complete list of arguments.
+
+
+
