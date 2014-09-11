@@ -18,7 +18,7 @@ By default, your important Apache, PHP, and MySQL files and databases will be ba
 with a second copy stored offsite at Amazon S3.
 Old backups will be automatically removed.
 The most recent two weeks of nightly backups will be kept by default,
-along with 1 year of monthly backups (the backup taken on the first day of the month).
+along with twelve months of monthly backups (the backup taken on the first day of the month).
 
 (1) Install the **lamp-backup** tools by downloading the project files and copying the sbin and etc directories to `/usr/local`.
 The following commands will do this and set some important file permissions.
