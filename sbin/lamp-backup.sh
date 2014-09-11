@@ -63,7 +63,7 @@ redirect_output() {
     fi
 }
 
-# Source the config files, if any.
+# Source config file, if it exists.
 CONFIG_FILE=${CONFIG_FILE:-$CONFIG_DIR/lamp-backup.conf}
 if [ -r "$CONFIG_FILE" ]; then
     . $CONFIG_FILE
