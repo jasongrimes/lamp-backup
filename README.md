@@ -1,7 +1,7 @@
 lamp-backup
 ===========
 
-Bash shell scripts for basic backup management on a LAMP server.
+Bash shell scripts for managing backups on a basic LAMP server.
 
 ## Overview
 
