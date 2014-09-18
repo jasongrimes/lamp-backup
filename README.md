@@ -181,7 +181,7 @@ Only one backup is kept for each day (the most recent one).
 
 ### Configuring backup rotation
 
-These defaults can be changed by editing `/usr/local/etc/lamp-backup.conf`.
+The default rotation schedule can be changed by editing [/usr/local/etc/lamp-backup.conf](etc/lamp-backup.conf).
 
 There are separate config options for locally stored backups and backups stored on Amazon S3.
 
