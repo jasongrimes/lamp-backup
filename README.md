@@ -102,7 +102,7 @@ You can customize the script's behavior with a variety of command-line options.
 
 ### Customizing backup configuration
 
-To customize the backup configuration, edit `/usr/local/etc/lamp-backup.conf`.
+To customize the backup configuration, edit `[/usr/local/etc/lamp-backup.conf](etc/lamp-backup.conf)`.
 This file is optional, and if it doesn't exist, sensible defaults will be used.
 
 See the comments in the config file for details about the options available.
